@@ -1,9 +1,16 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using WebApplication1.Data;
 using WebApplication1.DTOs;
 using WebApplication1.Models;
+using WebApplication1.Options;
 
 namespace WebApplication1.Controllers
 {
@@ -13,10 +20,12 @@ namespace WebApplication1.Controllers
     {
 
         private readonly ApplicationDbContext _context;
+        private readonly JwtOptions _JwtOptions;
 
-        public UserController(ApplicationDbContext context)
+        public UserController(ApplicationDbContext context, IOptions<JwtOptions> options)
         {
             _context = context;
+            _JwtOptions = options.Value;
         }
 
         [HttpGet]
@@ -57,7 +66,7 @@ namespace WebApplication1.Controllers
             return user;
         }
 
-        [HttpPost]
+        [HttpPost("register")]
         public async Task<ActionResult<GetUserDTO>> CreateUser(CreateUserDTO dto)
         {
             var RoleExist = await _context.Roles.AnyAsync(r => r.Id == dto.RoleId);
@@ -94,7 +103,61 @@ namespace WebApplication1.Controllers
             });
         }
 
+
+        [HttpPost("login")]
+        public async Task<ActionResult<GetUserDTO>> LoginUser(LoginUserDTO dto)
+        {
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .FirstOrDefaultAsync(u => u.Email == dto.Email && u.Password == dto.Password);
+
+            if (user == null)
+            {
+                return Unauthorized("Invalid email or password");
+            }
+
+            var accessToken = GenerateJSONWebToken(user);
+
+            return Ok(new { Token = accessToken });
+        }
+
+        private string GenerateJSONWebToken(User user)
+        {
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_JwtOptions.Key));
+
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+            {
+                new Claim (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim (JwtRegisteredClaimNames.Email,  user.Email),
+                new Claim (ClaimTypes.Role, user.Role.Name)
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _JwtOptions.Issuer,
+                audience: _JwtOptions.Audience,
+                expires: DateTime.Now.AddMinutes(_JwtOptions.ExpiresMinutes),
+                signingCredentials: credentials
+                );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private void SetJWTCookie(string token)
+        {
+            var CookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Expires = DateTime.UtcNow.AddMinutes(_JwtOptions.ExpiresMinutes)
+            };
+
+            Response.Cookies.Append("jwt_token", token, CookieOptions);
+        }
+
+
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<ActionResult> UpdateUser(int id, CreateUserDTO dto)
         {
             var user = await _context.Users.FindAsync(id);
@@ -132,6 +195,7 @@ namespace WebApplication1.Controllers
 
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteUser(int id)
         {
             var user = await _context.Users.FindAsync(id);
