@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -21,11 +22,13 @@ namespace WebApplication1.Controllers
 
         private readonly ApplicationDbContext _context;
         private readonly JwtOptions _JwtOptions;
+        private readonly IPasswordHasher<User> _passwordHasher;
 
-        public UserController(ApplicationDbContext context, IOptions<JwtOptions> options)
+        public UserController(ApplicationDbContext context, IOptions<JwtOptions> options, IPasswordHasher<User> passwordHasher)
         {
             _context = context;
             _JwtOptions = options.Value;
+            _passwordHasher = passwordHasher;
         }
 
         [HttpGet]
@@ -87,9 +90,10 @@ namespace WebApplication1.Controllers
             {
                 Name = dto.Name,
                 Email = dto.Email,
-                Password = dto.Password,
                 RoleId = dto.RoleId
             };
+
+            user.Password = _passwordHasher.HashPassword(user, dto.Password);
 
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
@@ -109,9 +113,16 @@ namespace WebApplication1.Controllers
         {
             var user = await _context.Users
                 .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.Email == dto.Email && u.Password == dto.Password);
+                .FirstOrDefaultAsync(u => u.Email == dto.Email);
 
             if (user == null)
+            {
+                return Unauthorized("Invalid email or password");
+            }
+
+            var hashCheck = _passwordHasher.VerifyHashedPassword(user, user.Password, dto.Password);
+
+            if (hashCheck == PasswordVerificationResult.Failed)
             {
                 return Unauthorized("Invalid email or password");
             }
@@ -176,7 +187,7 @@ namespace WebApplication1.Controllers
 
             user.Name = dto.Name;
             user.Email = dto.Email;
-            user.Password = dto.Password;
+            user.Password = _passwordHasher.HashPassword(user, dto.Password);
             user.RoleId = dto.RoleId;
 
 

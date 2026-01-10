@@ -2,9 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using WebApplication1.Models;
 using System.Text;
 using WebApplication1.Data;
 using WebApplication1.Options;
+using Microsoft.AspNetCore.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -68,6 +70,7 @@ builder.Services.AddSwaggerGen(c =>
     c.AddSecurityRequirement(new OpenApiSecurityRequirement { { jwtSecurityScheme, Array.Empty<string>() } });
 });
 
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 
 var app = builder.Build();
