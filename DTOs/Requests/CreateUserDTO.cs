@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WebApplication1.DTOs
+namespace WebApplication1.DTOs.Requests
 {
     public class CreateUserDTO
     {
@@ -13,7 +13,5 @@ namespace WebApplication1.DTOs
         [Required]
         public string Password { get; set; }
 
-        [Required]
-        public int RoleId { get; set; }
     }
 }

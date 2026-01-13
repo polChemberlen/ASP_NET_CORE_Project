@@ -3,10 +3,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using WebApplication1.Models;
+using WebApplication1.Services.Implementations;
+using WebApplication1.Repositories.Implementations;
 using System.Text;
 using WebApplication1.Data;
 using WebApplication1.Options;
 using Microsoft.AspNetCore.Identity;
+using WebApplication1.Repositories.Interfaces;
+using WebApplication1.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -47,6 +51,15 @@ builder.Services.AddAuthentication(JwtBearerDefaults
                 Encoding.UTF8.GetBytes(jwtOptions.Key))
 
         };
+
+        options.Events = new JwtBearerEvents
+        {0
+            OnMessageReceived = context =>
+            {
+                context.Token = context.Request.Cookies["jwt_token"];
+                return Task.CompletedTask;
+            }
+        };
     });
 
 builder.Services.AddAuthorization();
@@ -72,6 +85,12 @@ builder.Services.AddSwaggerGen(c =>
 
 builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+
+builder.Services.AddScoped<IUserService, UserService>();
+
+builder.Services.AddScoped<IJSONWebTokenService, JSONWebTokenService>();
 
 var app = builder.Build();
 

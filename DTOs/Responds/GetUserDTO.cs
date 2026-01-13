@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.DTOs
+﻿namespace WebApplication1.DTOs.Responds
 {
     public class GetUserDTO
     {
