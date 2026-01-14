@@ -3,7 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using WebApplication1.Models;
+using WebApplication1.Models.Entities;
 using WebApplication1.Options;
 using WebApplication1.Services.Interfaces;
 
@@ -31,7 +31,6 @@ namespace WebApplication1.Services.Implementations
         new Claim (JwtRegisteredClaimNames.Email,  user.Email),
         new Claim (ClaimTypes.Role, user.Role.Name)
     };
-
             var token = new JwtSecurityToken(
                 issuer: _JwtOptions.Issuer,
                 audience: _JwtOptions.Audience,

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using WebApplication1.Data;
-using WebApplication1.DTOs.Responds;
-using WebApplication1.Models;
+using WebApplication1.Models.DTOs.Responds;
+using WebApplication1.Models.Entities;
 using WebApplication1.Repositories.Interfaces;
 
 namespace WebApplication1.Repositories.Implementations

@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 
-namespace WebApplication1.Models
+namespace WebApplication1.Models.Entities
 {
     public class User
     {
@@ -8,7 +8,8 @@ namespace WebApplication1.Models
         public string Name { get; set; } = null!;
         public string Email { get; set; } = null!;
 
-        public string Password {  get; set; } = null!;
+        // Password should be hashed, not stored in plain text
+        public string HashPassword {  get; set; } = null!;
 
         // Foreign key to Role
         public int RoleId { get; set; }

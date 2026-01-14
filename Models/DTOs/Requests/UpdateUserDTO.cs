@@ -1,4 +1,4 @@
-﻿namespace WebApplication1.DTOs.Requests
+﻿namespace WebApplication1.Models.DTOs.Requests
 {
     public class UpdateUserDTO
     {

@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using WebApplication1.DTOs.Requests;
-using WebApplication1.DTOs.Responds;
-using WebApplication1.Models;
 using WebApplication1.Services.Interfaces;
 using WebApplication1.Repositories.Implementations;
 using WebApplication1.Repositories.Interfaces;
+using WebApplication1.Models.DTOs.Requests;
+using WebApplication1.Models.DTOs.Responds;
+using WebApplication1.Models.Entities;
 
 namespace WebApplication1.Services.Implementations
 {
@@ -76,7 +76,7 @@ namespace WebApplication1.Services.Implementations
                 RoleId = userRole.Id
             };
 
-            user.Password = _passwordHasher.HashPassword(user, dto.Password);
+            user.HashPassword = _passwordHasher.HashPassword(user, dto.Password);
 
             await _repository.AddAsync(user);
 
@@ -96,7 +96,7 @@ namespace WebApplication1.Services.Implementations
             if (user == null)
                 throw new UnauthorizedAccessException("Invalid email or password");
 
-            var hashCheck = _passwordHasher.VerifyHashedPassword(user, user.Password, dto.Password);
+            var hashCheck = _passwordHasher.VerifyHashedPassword(user, user.HashPassword, dto.Password);
 
             if (hashCheck == PasswordVerificationResult.Failed)
                 throw new UnauthorizedAccessException("Invalid email or password");
@@ -115,7 +115,7 @@ namespace WebApplication1.Services.Implementations
             user.Email = dto.Email;
 
             if (!string.IsNullOrWhiteSpace(dto.Password))
-                user.Password = _passwordHasher.HashPassword(user, dto.Password);
+                user.HashPassword = _passwordHasher.HashPassword(user, dto.Password);
 
             await _repository.UpdateAsync(user);
 
@@ -123,7 +123,7 @@ namespace WebApplication1.Services.Implementations
             {
                 Id = user.Id,
                 Name = user.Name,
-                Email = user.Email,
+                Email = user.Email
             };
         }
 

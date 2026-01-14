@@ -1,6 +1,5 @@
-﻿
-using WebApplication1.DTOs.Requests;
-using WebApplication1.DTOs.Responds;
+﻿using WebApplication1.Models.DTOs.Requests;
+using WebApplication1.Models.DTOs.Responds;
 using WebApplication1.Services.Interfaces;
 
 namespace WebApplication1.Services.Interfaces

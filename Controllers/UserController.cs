@@ -2,10 +2,11 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
+using System.Net.Security;
 using WebApplication1.Data;
-using WebApplication1.DTOs.Requests;
-using WebApplication1.DTOs.Responds;
 using WebApplication1.Models;
+using WebApplication1.Models.DTOs.Requests;
+using WebApplication1.Models.DTOs.Responds;
 using WebApplication1.Options;
 using WebApplication1.Services.Interfaces;
 
@@ -26,7 +27,7 @@ namespace WebApplication1.Controllers
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<GetUserDTO>>> GetUsers()
-        {
+        {   
             try
             {
                 var users = await _service.GetAllUsersAsync();
@@ -104,7 +105,7 @@ namespace WebApplication1.Controllers
                 HttpOnly = true,
                 Expires = DateTime.UtcNow.AddMinutes(_JwtOptions.ExpiresMinutes),
                 Secure = true,
-                SameSite = SameSiteMode.Strict
+                SameSite = SameSiteMode.None
             };
 
             Response.Cookies.Append("jwt_token", token, CookieOptions);

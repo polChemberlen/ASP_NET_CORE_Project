@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using WebApplication1.Models;
 using WebApplication1.Services.Implementations;
 using WebApplication1.Repositories.Implementations;
 using System.Text;
@@ -11,6 +10,7 @@ using WebApplication1.Options;
 using Microsoft.AspNetCore.Identity;
 using WebApplication1.Repositories.Interfaces;
 using WebApplication1.Services.Interfaces;
+using WebApplication1.Models.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,6 +40,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
+
+            
             ValidateIssuer = true,
             ValidateAudience = true,
             ValidateLifetime = true,
@@ -53,7 +55,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults
         };
 
         options.Events = new JwtBearerEvents
-        {0
+        {
             OnMessageReceived = context =>
             {
                 context.Token = context.Request.Cookies["jwt_token"];
