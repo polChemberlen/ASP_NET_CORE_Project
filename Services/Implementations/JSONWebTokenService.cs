@@ -26,11 +26,12 @@ namespace WebApplication1.Services.Implementations
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
             var claims = new List<Claim>
-    {
-        new Claim (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-        new Claim (JwtRegisteredClaimNames.Email,  user.Email),
-        new Claim (ClaimTypes.Role, user.Role.Name)
-    };
+            {
+                new Claim (JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+                new Claim (JwtRegisteredClaimNames.Email,  user.Email),
+                new Claim (ClaimTypes.Role, user.Role.Name)
+            };
+
             var token = new JwtSecurityToken(
                 issuer: _JwtOptions.Issuer,
                 audience: _JwtOptions.Audience,

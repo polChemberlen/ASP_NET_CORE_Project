@@ -7,6 +7,8 @@
 
         public string PhoneNumber { get; set; } = null!;
 
+        public string AnimalType { get; set; } = null!;
+
         public string Breed { get; set; } = null!;
 
         public string? PetAge { get; set; } = null!;

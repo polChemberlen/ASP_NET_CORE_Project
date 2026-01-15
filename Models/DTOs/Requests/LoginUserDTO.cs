@@ -6,6 +6,7 @@ namespace WebApplication1.Models.DTOs.Requests
     {
         [Required, EmailAddress]
         public string Email { get; set; }
+
         [Required]
         public string Password { get; set; }
     }

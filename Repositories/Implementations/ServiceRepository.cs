@@ -53,5 +53,13 @@ namespace WebApplication1.Repositories.Implementations
         {
             return await _context.Services.AnyAsync(s => s.Id == id);
         }
+
+        public async Task<bool> IsStatusAcive(Service service)
+        {
+            return await _context.Services
+             .AnyAsync(s => s.Id == service.Id && s.IsActive == true);
+        }
+
+
     }
 }

@@ -14,6 +14,6 @@ namespace WebApplication1.Repositories.Interfaces
 
         Task<bool> ExistByTitleAsync(string title);
         Task<bool> ExistByIdAsync(int id);
-        Task<bool> IsStatucAcive(Service service);
+        Task<bool> IsStatusAcive(Service service);
     }
 }

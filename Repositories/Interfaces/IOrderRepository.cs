@@ -8,6 +8,6 @@ namespace WebApplication1.Repositories.Interfaces
         Task<Order?> GetByIdAsync(int id);
         Task AddAsync(Order order);
         Task DeleteAsync(Order order);
-        Task<bool> IsStatucAcive(Order order);
+        Task<bool> IsStatusAcive(Order order);
     }
 }
